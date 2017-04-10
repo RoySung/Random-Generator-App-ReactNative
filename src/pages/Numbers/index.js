@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Header } from 'RandomGeneratorApp/src/components';
-import { Container, Button, Text } from 'native-base';
+import { Container, Content, Button, Text, InputGroup, Input, Icon, ListItem, List, Separator, CheckBox } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
 
 const styles = StyleSheet.flatten({
@@ -26,6 +26,8 @@ type PropsType = {
   navigation: any,
 };
 
+var items = ['Simon Mignolet','Nathaniel Clyne','Dejan Lovren','Mama Sakho','Emre Can'];
+
 class Numbers extends Component {
   static navigationOptions = {
     title: 'Numbers',
@@ -35,22 +37,38 @@ class Numbers extends Component {
   render() {
     return (
       <Container>
+        <Content>
           <Header title="Numbers" />
-          <View style={styles.container}>
-          <Text style={styles.welcome}>
-            This is the Infos page
-          </Text>
-          <Text style={styles.instructions}>
-            It means you have a working router
-          </Text>
-          <Text style={styles.instructions}>
-            Double tap R on your keyboard to reload,{'\n'}
-            Shake or press menu button for dev menu
-          </Text>
-          <Button primary>
-            <Text> Primary </Text>
+          <InputGroup>
+            <Button large rounded info>
+              <Icon name='md-remove' />
+            </Button>
+            <Icon name='arrow-up' style={{color:'#00C497'}}/>
+            <Input placeholder='Minimum'/>
+            <Button large rounded info>
+                <Icon name='md-add' />
+            </Button>
+          </InputGroup>
+
+          <ListItem>
+            <CheckBox checked={true} />
+            <Text> Repeat </Text>
+          </ListItem>
+
+          <Button block info>
+            <Text> Randomize </Text>
           </Button>
-        </View>
+
+          <List dataArray={items}
+            renderRow={(item) =>(
+              <ListItem itemDivider>
+                  <Text>{item}</Text>
+              </ListItem>
+            )
+          }>
+          </List>
+          
+        </Content>
       </Container>
     );
   }
