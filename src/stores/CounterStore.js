@@ -1,4 +1,5 @@
-import { observable } from 'mobx';
+import { observable, useStrict, action } from 'mobx';
+useStrict(true);
 
 class CounterStore {
   @observable counter
@@ -9,21 +10,21 @@ class CounterStore {
     this.counter = def
   }
 
-  increment() {
+  @action increment() {
     if (this.counter + 1 > this.max || this.counter + 1 < this.min )
       this.counter + 1 > this.max ? this.counter = this.max : this.counter = this.min
     else
       this.counter++
   }
 
-  decrement() {
+  @action decrement() {
     if (this.counter - 1 > this.max || this.counter - 1 < this.min )
       this.counter - 1 > this.max ? this.counter = this.max : this.counter = this.min
     else
       this.counter--
   }
 
-  setCounter(counter) {
+  @action setCounter(counter) {
     counter = parseInt(counter) ? parseInt(counter) : counter
     // counter = counter > this.min ? counter : this.min
     // counter = counter < this.max ? counter : this.max - 1

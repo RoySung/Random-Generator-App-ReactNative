@@ -1,13 +1,33 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Header } from 'RandomGeneratorApp/src/components';
+import { Header, CustomList } from 'RandomGeneratorApp/src/components';
 import { InputNumberInRange } from 'RandomGeneratorApp/src/containers';
 import { Container, Content, Button, Text, ListItem, List, CheckBox } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
 
 import { RangeStore, CounterStore } from 'RandomGeneratorApp/src/stores';
-import { observable } from "mobx";
+import { observable, action } from "mobx";
 import { observer } from "mobx-react";
+
+function randomInRange(start, end, count, isRepeated, done) {
+  let rand
+  const result = done.slice()
+  const total = (end - start + 1) - (result.length)
+
+  if(count > total && !isRepeated) return result
+
+  count += result.length
+  while (result.length < count) {
+    rand = Math.floor(Math.random() * (end - start + 1) + start)
+    if (!isRepeated) {
+      if(!result.includes(rand)) result.unshift(rand)
+    }
+    else
+      result.unshift(rand)
+  }
+  // result.sort((a, b) => a - b);
+  return result;
+}
 
 const styles = StyleSheet.flatten({
   container: {
@@ -31,7 +51,7 @@ type PropsType = {
   navigation: any,
 };
 
-var items = ['Simon Mignolet','Nathaniel Clyne','Dejan Lovren','Mama Sakho','Emre Can'];
+var items = [0, 6];
 
 @observer
 class Numbers extends Component {
@@ -41,7 +61,8 @@ class Numbers extends Component {
   props: PropsType;
 
   @observable isRepeat = true
-  
+  @observable items = []
+  @observable count
   constructor (props) {
     super(props)
     let minStore = new CounterStore(0)
@@ -50,6 +71,27 @@ class Numbers extends Component {
     this.counterStore.min = 1
     this.rangeStore = new RangeStore(minStore, maxStore)
     this.handleRandomize = this.handleRandomize.bind(this)
+    this.handleIsRepeat = this.handleIsRepeat.bind(this)
+  }
+
+  @action
+  handleRandomize() {
+    const min = this.rangeStore.minStore.counter
+    const max = this.rangeStore.maxStore.counter
+    const count = parseInt(this.counterStore.counter)
+    const items = this.items.slice()
+    const rand = randomInRange(min, max, count, this.isRepeat, items)
+    
+    if (JSON.stringify(rand) != JSON.stringify(items)) {
+      this.count = count
+      this.items.replace(rand)
+    }
+  }
+
+  @action
+  handleIsRepeat() {
+    this.isRepeat = !this.isRepeat
+    this.items = []
   }
 
   render() {
@@ -62,22 +104,16 @@ class Numbers extends Component {
           <InputNumberInRange field='count' store={this.counterStore} inputIcon='list' />
 
           <ListItem>
-            <CheckBox checked={this.isRepeat} onPress={() => this.isRepeat = !this.isRepeat} />
+            <CheckBox checked={this.isRepeat} onPress={this.handleIsRepeat} />
             <Text> Repeat </Text>
           </ListItem>
-
-          <Button block info opPress={this.handleRandomize}>
+          
+          <Button block info onPress={this.handleRandomize} >
             <Text> Randomize </Text>
           </Button>
 
-          <List dataArray={items}
-            renderRow={(item) =>(
-              <ListItem itemDivider>
-                  <Text>{item}</Text>
-              </ListItem>
-            )
-          }>
-          </List>
+          {/*<CustomList items={this.items} newlen={this.items.length} />*/}
+          <CustomList items={this.items.slice()} newlen={this.count} />
 
         </Content>
       </Container>
