@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Header, CustomList } from 'RandomGeneratorApp/src/components';
 import { InputNumberInRange } from 'RandomGeneratorApp/src/containers';
-import { Container, Content, Button, Text, ListItem, List, CheckBox } from 'native-base';
+import { Container, Content, Button, Text, ListItem, List, CheckBox, Icon, Fab, Toast } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
 
 import { RangeStore, CounterStore } from 'RandomGeneratorApp/src/stores';
@@ -53,6 +53,7 @@ class Numbers extends Component {
     this.rangeStore = new RangeStore(minStore, maxStore)
     this.handleRandomize = this.handleRandomize.bind(this)
     this.handleIsRepeat = this.handleIsRepeat.bind(this)
+    this.resetResult = this.resetResult.bind(this)
   }
 
   @action
@@ -66,13 +67,31 @@ class Numbers extends Component {
     if (JSON.stringify(rand) != JSON.stringify(items)) {
       this.count = count
       this.items.replace(rand)
+    } else {
+      this.popupToast('warning', "It is exceeded the amount available.")
     }
   }
 
   @action
   handleIsRepeat() {
     this.isRepeat = !this.isRepeat
+    this.resetResult()
+  }
+
+  @action
+  resetResult() {
     this.items = []
+    this.popupToast('success', 'Result has refreshed.')
+  }
+
+  popupToast(type, text) {
+    const option = {
+      type: type,
+      text: text,
+      position: 'bottom',
+      duration: 2000
+    }
+    Toast.show(option)
   }
 
   render() {
@@ -95,8 +114,17 @@ class Numbers extends Component {
 
           {/*<CustomList items={this.items} newlen={this.items.length} />*/}
           <CustomList items={this.items.slice()} newlen={this.count} />
-
+          
         </Content>
+        <Fab
+            direction="right"
+            position="bottomRight"
+            containerStyle={{ marginLeft: 10 }}
+            style={{ backgroundColor: '#5089FF' }}
+            onPress={this.resetResult}
+          >
+            <Icon name="md-refresh" />
+          </Fab>
       </Container>
     );
   }
