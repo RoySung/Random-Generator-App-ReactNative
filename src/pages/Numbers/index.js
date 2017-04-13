@@ -6,28 +6,9 @@ import { Container, Content, Button, Text, ListItem, List, CheckBox } from 'nati
 import appStyle from 'RandomGeneratorApp/src/appStyle';
 
 import { RangeStore, CounterStore } from 'RandomGeneratorApp/src/stores';
+import { randomInRange } from 'RandomGeneratorApp/src/lib'
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
-
-function randomInRange(start, end, count, isRepeated, done) {
-  let rand
-  const result = done.slice()
-  const total = (end - start + 1) - (result.length)
-
-  if(count > total && !isRepeated) return result
-
-  count += result.length
-  while (result.length < count) {
-    rand = Math.floor(Math.random() * (end - start + 1) + start)
-    if (!isRepeated) {
-      if(!result.includes(rand)) result.unshift(rand)
-    }
-    else
-      result.unshift(rand)
-  }
-  // result.sort((a, b) => a - b);
-  return result;
-}
 
 const styles = StyleSheet.flatten({
   container: {
@@ -81,7 +62,7 @@ class Numbers extends Component {
     const count = parseInt(this.counterStore.counter)
     const items = this.items.slice()
     const rand = randomInRange(min, max, count, this.isRepeat, items)
-    
+
     if (JSON.stringify(rand) != JSON.stringify(items)) {
       this.count = count
       this.items.replace(rand)
