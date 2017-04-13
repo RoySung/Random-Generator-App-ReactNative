@@ -11,21 +11,15 @@ import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 
 const styles = StyleSheet.flatten({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  button: {
+    margin: 10
   },
-  welcome: {
-    fontSize: appStyle.font.size.huge,
-    textAlign: 'center',
-    margin: appStyle.grid.x1,
+  floatButton: {
+    marginLeft: 10
   },
-  instructions: {
-    textAlign: 'center',
-    color: appStyle.colors.darkGray,
-    marginBottom: appStyle.grid.x1,
-  },
+  floatButtonColor: {
+    backgroundColor: '#5089FF'
+  }
 });
 
 type PropsType = {
@@ -102,25 +96,20 @@ class Numbers extends Component {
           <InputNumberInRange field='Min' store={this.rangeStore.minStore} inputIcon='arrow-up' />
           <InputNumberInRange field='Max' store={this.rangeStore.maxStore} inputIcon='arrow-down' />
           <InputNumberInRange field='count' store={this.counterStore} inputIcon='list' />
-
           <ListItem>
             <CheckBox checked={this.isRepeat} onPress={this.handleIsRepeat} />
             <Text> Repeat </Text>
-          </ListItem>
-          
-          <Button block info onPress={this.handleRandomize} >
+          </ListItem>          
+          <Button block info onPress={this.handleRandomize} style={styles.button} >
             <Text> Randomize </Text>
           </Button>
-
-          {/*<CustomList items={this.items} newlen={this.items.length} />*/}
           <CustomList items={this.items.slice()} newlen={this.count} />
-          
         </Content>
         <Fab
             direction="right"
             position="bottomRight"
-            containerStyle={{ marginLeft: 10 }}
-            style={{ backgroundColor: '#5089FF' }}
+            containerStyle={styles.floatButton}
+            style={styles.floatButtonColor}
             onPress={this.resetResult}
           >
             <Icon name="md-refresh" />
