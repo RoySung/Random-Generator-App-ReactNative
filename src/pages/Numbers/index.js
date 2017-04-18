@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Header, CustomList } from 'RandomGeneratorApp/src/components';
+import { Header, ResultList } from 'RandomGeneratorApp/src/components';
 import { InputNumberInRange } from 'RandomGeneratorApp/src/containers';
 import { Container, Content, Button, Text, ListItem, List, CheckBox, Icon, Fab, Toast } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
@@ -103,7 +103,7 @@ class Numbers extends Component {
           <Button block info onPress={this.handleRandomize} style={styles.button} >
             <Text> Randomize </Text>
           </Button>
-          <CustomList items={this.items.slice()} newlen={this.count} />
+          <ResultList items={this.items.slice()} newlen={this.count} />
         </Content>
         <Fab
             direction="right"

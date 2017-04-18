@@ -9,8 +9,8 @@ export default TabNavigator({
   numbers: {
     screen: Pages.Numbers,
   },
-  custom: {
-    screen: Pages.Custom,
+  customList: {
+    screen: Pages.CustomList,
   }
 }, {
   initialRouteName: 'numbers',

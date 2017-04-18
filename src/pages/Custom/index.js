@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Header, CustomList } from 'RandomGeneratorApp/src/components';
+import { Header, ResultList } from 'RandomGeneratorApp/src/components';
 import { InputNumberInRange, CustomListInputText } from 'RandomGeneratorApp/src/containers';
 import { Container, Content, Button, Text, ListItem, List, CheckBox, Icon, Fab, Toast } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
@@ -54,7 +54,7 @@ type PropsType = {
 @observer
 class Custom extends Component {
   static navigationOptions = {
-    title: 'Custom',
+    title: (navigation) => (navigation.state.params.title)
   };
   props: PropsType;
 
@@ -64,8 +64,8 @@ class Custom extends Component {
   @observable count
   constructor (props) {
     super(props)
-    let defaultList = ['default', 'default1']
-    this.listStore = new ListStore(defaultList)
+    // let defaultList = ['default', 'default1']
+    this.listStore = new ListStore(props.navigation.state.params.defaultList)
     this.counterStore = new CounterStore(2)
     this.counterStore.min = 1
     this.handleRandomize = this.handleRandomize.bind(this)
@@ -119,7 +119,6 @@ class Custom extends Component {
     return (
       <Container>
         <Content>
-          <Header title="Custom" />
           <CustomListInputText store={this.listStore} />
 
           <Button block info onPress={() => this.listStore.newItem()} >
@@ -131,12 +130,12 @@ class Custom extends Component {
           <InputNumberInRange field='count' store={this.counterStore} inputIcon='list' />
           <ListItem>
             <CheckBox checked={this.isRepeat} onPress={this.handleIsRepeat} />
-            <Text> Repeat </Text>
+            <Text> Repeat {JSON.stringify(this.props.navigation.state.params.user)} </Text>
           </ListItem>          
           <Button block info onPress={this.handleRandomize} style={styles.button} >
             <Text> Randomize </Text>
           </Button>
-          <CustomList items={this.result.slice()} newlen={this.count} />
+          <ResultList items={this.result.slice()} newlen={this.count} />
         </Content>
         <Fab
             direction="right"
