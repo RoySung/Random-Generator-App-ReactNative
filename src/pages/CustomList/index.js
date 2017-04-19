@@ -5,6 +5,9 @@ import { StackNavigator } from 'react-navigation';
 import Custom from '../Custom';
 import { Container, Content, Button, Text, List, ListItem } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
+import { LocalStorge } from 'RandomGeneratorApp/src/lib'
+import { observable, action, runInAction } from "mobx";
+import { observer } from "mobx-react";
 
 const styles = StyleSheet.create({
   container: {
@@ -28,11 +31,33 @@ type PropsType = {
   navigation: any,
 };
 
+@observer
 class CustomList extends Component {
   static navigationOptions = {
     title: 'CustomList',
   };
   props: PropsType;
+
+  @observable items = []
+  constructor(props) {
+    super(props)
+    // var items = [{name: 'test', items: ['d', 'c']}, {name: 'test2', items: ['d', 'c']}];
+    // let localStorage = new LocalStorge('Custom')
+    // localStorage.save(items)
+    this.loadLocalStorage()
+  }
+
+  async loadLocalStorage() {
+    let localStorage = new LocalStorge('Custom')
+    let result = await localStorage.load()
+    runInAction("update data about Custom items from local storage.", () => {
+        this.items.replace(result) 
+    })
+
+    // localStorage.load().then(result => runInAction("update data about Custom items from local storage.", () => {
+    //   this.items.replace(result) 
+    // }))
+  }
 
   _goToNew = () => {
     this.props.navigation.navigate('custom', {
@@ -49,11 +74,10 @@ class CustomList extends Component {
   }
 
   render() {
-    var items = [{name: 'test', items: ['d', 'c']}, {name: 'test2', items: ['d', 'c']}];
     return (
         <Container>
           <Content>
-            <List dataArray={items}
+            <List dataArray={this.items.slice()}
                 renderRow={item =>
                   <Button block style={{margin: 10}} onPress={() => this._goToCustom(item)}>
                     <Text>{item.name}</Text>
