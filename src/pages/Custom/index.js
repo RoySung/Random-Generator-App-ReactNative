@@ -10,7 +10,7 @@ import { randomInRange } from 'RandomGeneratorApp/src/lib'
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 
-class ListStore {
+class ItemsStore {
   @observable list
   constructor(list) {
     this.list = list
@@ -53,9 +53,18 @@ type PropsType = {
 
 @observer
 class Custom extends Component {
-  static navigationOptions = {
-    title: (navigation) => (navigation.state.params.title)
+  static navigationOptions = ({ navigation }) => {
+  const { state } = navigation;
+  const { customStore } = state.params
+  return {
+    title: customStore.title,
+    headerRight: (
+      <Button disabled={false} onPress={() => customStore.save()} >
+        <Text>Save</Text>
+      </Button>
+    ),
   };
+};
   props: PropsType;
 
   @observable isRepeat = true
@@ -64,8 +73,8 @@ class Custom extends Component {
   @observable count
   constructor (props) {
     super(props)
-    // let defaultList = ['default', 'default1']
-    this.listStore = new ListStore(props.navigation.state.params.defaultList)
+    // let items = ['default', 'default1']
+    this.itemsStore = new ItemsStore(props.navigation.state.params.customStore.items)
     this.counterStore = new CounterStore(2)
     this.counterStore.min = 1
     this.handleRandomize = this.handleRandomize.bind(this)
@@ -119,9 +128,9 @@ class Custom extends Component {
     return (
       <Container>
         <Content>
-          <CustomListInputText store={this.listStore} />
+          <CustomListInputText store={this.itemsStore} />
 
-          <Button block info onPress={() => this.listStore.newItem()} >
+          <Button block info onPress={() => this.itemsStore.newItem()} >
             <Icon name='md-add' />
           </Button>
           
