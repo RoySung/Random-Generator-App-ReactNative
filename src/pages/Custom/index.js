@@ -58,88 +58,29 @@ class Custom extends Component {
   static navigationOptions = ({ navigation }) => {
   const { state, setParams } = navigation;
   let { customStore } = state.params
-  let preName = customStore.title
-  const setName = (name) => {
-    let store = customStore
-    store.title = name
-    setParams({ customStore: store })
-  }
-
-  const cancel = () => {
-    setName(preName)
-    DialogManager.dismiss()
-  }
-
-  const save = () => {
-    DialogManager.dismiss()
-    customStore.save()
-    const option = {
-      type: 'success',
-      text: 'Save is Success!',
-      position: 'bottom',
-      duration: 2000
-    }
-    Toast.show(option)
-    navigation.goBack()
-  }
-
-  let dialogView = (
-    <DialogContent>
-      <Item inlineLabel>
-        <Label>Name of Item: </Label>
-        <Input 
-          defaultValue={customStore.title}
-          onChangeText={value => {
-            setName(value)
-          }}
-        />
-      </Item>
-      <View style={{justifyContent : 'flex-end', flexDirection: 'row', margin: 10}}>
-        <Button style={{margin: 10}} rounded onPress={cancel}>
-          <Text>Cancel</Text>
-        </Button>
-        <Button style={{alignSelf : 'flex-end', margin: 10}} rounded onPress={save}>
-          <Text>Save</Text>
-        </Button>
-      </View>
-    </DialogContent>
-  )
-
   return {
-    title: customStore.title,
-    headerRight: (
-      <Button disabled={false} onPress={() => {
-        preName = customStore.title
-        DialogManager.show({
-          title: 'Comfirm',
-          titleAlign: 'center',
-          animationDuration: 200,
-          ScaleAnimation: new ScaleAnimation(),
-          children: (dialogView),
-        }, () => {
-          console.log('callback - show');
-        });
-      }} >
-        <Text>Save</Text>
-      </Button>
-    ),
-  };
+    title: customStore.title
+  }
 };
   props: PropsType;
-
+  @observable isSetting = false
   @observable isRepeat = true
   @observable resultKey = []
   @observable result = []
   @observable count
+  preName
   constructor (props) {
     super(props)
     // let items = ['default', 'default1']
+    this.customStore = props.navigation.state.params.customStore
     this.itemsStore = new ItemsStore(props.navigation.state.params.customStore.items)
     this.counterStore = new CounterStore(2)
     this.counterStore.min = 1
     this.handleRandomize = this.handleRandomize.bind(this)
     this.handleIsRepeat = this.handleIsRepeat.bind(this)
     this.resetResult = this.resetResult.bind(this)
+    this.handleIsSetting = this.handleIsSetting.bind(this)
+    this.handleSave = this.handleSave.bind(this)
   }
 
   @action
@@ -171,6 +112,70 @@ class Custom extends Component {
     this.result = []
     this.resultKey = []
     this.popupToast('success', 'Result has refreshed.')
+  }
+
+  @action
+  handleIsSetting() {
+    this.isSetting = !this.isSetting
+  }
+
+  handleSave() {
+    const setName = (name) => {
+      let store = this.customStore
+      store.title = name
+      this.props.navigation.setParams({ customStore: store })
+    }
+
+    const cancel = () => {
+      setName(this.preName)
+      DialogManager.dismiss()
+    }
+
+    const save = () => {
+      DialogManager.dismiss()
+      this.customStore.save()
+      const option = {
+        type: 'success',
+        text: 'Save is Success!',
+        position: 'bottom',
+        duration: 2000
+      }
+      Toast.show(option)
+      this.props.navigation.goBack()
+    }
+
+    let dialogView = (
+      <DialogContent>
+        <Item inlineLabel>
+          <Label>Name of Item: </Label>
+          <Input 
+            defaultValue={this.customStore.title}
+            onChangeText={value => {
+              setName(value)
+            }}
+          />
+        </Item>
+        <View style={{justifyContent : 'flex-end', flexDirection: 'row', margin: 10}}>
+          <Button style={{margin: 10}} rounded onPress={cancel}>
+            <Text>Cancel</Text>
+          </Button>
+          <Button style={{alignSelf : 'flex-end', margin: 10}} rounded onPress={save}>
+            <Text>Save</Text>
+          </Button>
+        </View>
+      </DialogContent>
+    )
+
+    this.preName = this.customStore.title
+    DialogManager.show({
+      title: 'Comfirm',
+      titleAlign: 'center',
+      animationDuration: 200,
+      ScaleAnimation: new ScaleAnimation(),
+      children: (dialogView),
+    }, () => {
+      console.log('callback - show');
+    });
   }
   
 
@@ -207,13 +212,29 @@ class Custom extends Component {
           <ResultList items={this.result.slice()} newlen={this.count} />
         </Content>
         <Fab
-            direction="right"
+            active={this.isSetting}
+            direction="up"
             position="bottomRight"
             containerStyle={styles.floatButton}
             style={styles.floatButtonColor}
-            onPress={this.resetResult}
+            onPress={this.handleIsSetting}
           >
-            <Icon name="md-refresh" />
+            <Icon name="md-settings" />
+            <Button
+              style={{backgroundColor: 'blue'}}
+              onPress={this.resetResult}
+            >
+              <Icon name="md-refresh" />
+            </Button>
+            <Button 
+              style={{backgroundColor: 'green'}}
+              onPress={this.handleSave}
+            >
+              <Icon name="md-checkmark" />
+            </Button>
+            <Button style={{backgroundColor: 'red'}}>
+              <Icon name="md-trash" />
+            </Button>
           </Fab>
       </Container>
     );
