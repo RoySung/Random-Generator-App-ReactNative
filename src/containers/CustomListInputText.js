@@ -13,7 +13,7 @@ class CustomListInputText extends Component {
         const { store, index } = this.props
         return (
             <View>
-                {store.list.map((value, key) => (
+                {store.items.map((value, key) => (
                     <Item stackedLabel key={key}>
                         <Label>{key}.</Label>
                         <InputGroup>
@@ -23,7 +23,7 @@ class CustomListInputText extends Component {
                             value={value}
                             onChangeText={(text) => store.setItem(key, text)}
                         />
-                        <Button rounded danger onPress={() => store.removeItem(key)} disabled={store.list.length<=2}>
+                        <Button rounded danger onPress={() => store.removeItem(key)} disabled={store.items.length<=2}>
                             <Icon name='md-remove' />
                         </Button>
                         </InputGroup>

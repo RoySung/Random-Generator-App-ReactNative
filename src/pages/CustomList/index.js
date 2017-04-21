@@ -94,7 +94,7 @@ class CustomList extends Component {
   }
 
   _goToNew = () => {
-    let id = this.items.length
+    let id = this.items.length + 1
     const defaultItems = ['default', 'default1']
     let customStore = new CustomStore(`@Custom:${id}`, 'New', defaultItems)
     this.props.navigation.navigate('custom', {

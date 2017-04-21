@@ -13,26 +13,26 @@ import { observer } from "mobx-react";
 import DialogManager, { ScaleAnimation, DialogContent } from 'react-native-dialog-component';
 
 class ItemsStore {
-  @observable list
-  constructor(list) {
-    this.list = list
+  @observable items
+  constructor(items) {
+    this.items = items
   }
 
   @action
   newItem() {
-    let list = this.list.slice()
-    list.push(`default${this.list.length}`)
-    this.list.replace(list)
+    let items = this.items.slice()
+    items.push(`default${this.items.length}`)
+    this.items.replace(items)
   }
 
   @action
   setItem(index, text) {
-    this.list[index] = text
+    this.items[index] = text
   }
 
   @action
   removeItem(index) {
-    this.list.splice(index, 1)
+    this.items.splice(index, 1)
   }
 
 }
@@ -76,7 +76,7 @@ class Custom extends Component {
     super(props)
     // let items = ['default', 'default1']
     this.customStore = props.navigation.state.params.customStore
-    this.itemsStore = new ItemsStore(props.navigation.state.params.customStore.items)
+    this.itemsStore = new ItemsStore(props.navigation.state.params.customStore.items.slice())
     this.counterStore = new CounterStore(2)
     this.counterStore.min = 1
     this.handleRandomize = this.handleRandomize.bind(this)
@@ -91,14 +91,14 @@ class Custom extends Component {
   handleRandomize() {
     const count = parseInt(this.counterStore.counter)
     const resultKey = this.resultKey.slice()
-    const max = this.itemsStore.list.length - 1
+    const max = this.itemsStore.items.length - 1
     const rand = randomInRange(0, max, count, this.isRepeat, resultKey)
 
     if (JSON.stringify(rand) != JSON.stringify(resultKey)) {
       this.count = count
       this.resultKey.replace(rand)
       this.resultKey.map((value, key) => {
-        this.result[key] = this.itemsStore.list[value]
+        this.result[key] = this.itemsStore.items[value]
       })
     } else {
       this.popupToast('warning', "It is exceeded the amount available.")
@@ -123,6 +123,7 @@ class Custom extends Component {
     this.isSetting = !this.isSetting
   }
 
+  @action
   handleSave() {
     const setName = (name) => {
       let store = this.customStore
@@ -136,16 +137,27 @@ class Custom extends Component {
     }
 
     const save = () => {
+      let option = {}
       DialogManager.dismiss()
-      this.customStore.save()
-      const option = {
-        type: 'success',
-        text: `${this.customStore.title} has been Saved.`,
-        position: 'bottom',
-        duration: 2000
+      if(JSON.stringify(this.customStore.items.slice()) !== JSON.stringify(this.itemsStore.items.slice()) || this.preName !== this.customStore.title) {
+        this.customStore.items = this.itemsStore.items.slice()
+        this.customStore.save()
+        option = {
+          type: 'success',
+          text: `${this.customStore.title} has been Saved.`,
+          position: 'bottom',
+          duration: 2000
+        }
+        this.props.navigation.goBack()
+      } else {
+        option = {
+          type: 'warning',
+          text: `${this.customStore.title} isn't change.`,
+          position: 'bottom',
+          duration: 2000
+        }
       }
       Toast.show(option)
-      this.props.navigation.goBack()
     }
 
     let dialogView = (
@@ -210,13 +222,9 @@ class Custom extends Component {
       <Container>
         <Content style={styles.content}>
           <CustomListInputText store={this.itemsStore} />
-
           <Button block info onPress={() => this.itemsStore.newItem()} >
             <Icon name='md-add' />
           </Button>
-          
-
-          
           <InputNumberInRange field='count' store={this.counterStore} inputIcon='list' />
           <ListItem>
             <CheckBox checked={this.isRepeat} onPress={this.handleIsRepeat} />
