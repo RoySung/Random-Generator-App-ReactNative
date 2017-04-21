@@ -24,7 +24,7 @@ class CustomStore {
       title,
       items
     }
-    localStorage.save(value)
+    return localStorage.save(value)
   }
 
 }
@@ -53,9 +53,17 @@ type PropsType = {
 
 @observer
 class CustomList extends Component {
-  static navigationOptions = {
-    title: 'CustomList',
-  };
+  // static navigationOptions = {
+  //   title: 'CustomList',
+  // };
+  static navigationOptions = ({ navigation }) => {
+    console.log(JSON.stringify(navigation.state))
+    if (navigation.state.params)
+      navigation.state.params.loadLocalStorage()
+    return {
+      title: 'CustomList'
+    }
+  }
   props: PropsType;
 
   @observable items = []
@@ -64,7 +72,7 @@ class CustomList extends Component {
     // var items = [{name: 'test', items: ['d', 'c']}, {name: 'test2', items: ['d', 'c']}];
     // let localStorage = new LocalStorge('Custom')
     // localStorage.save(items)
-    this.loadLocalStorage()
+    // this.loadLocalStorage()
   }
 
   async loadLocalStorage() {
@@ -85,6 +93,8 @@ class CustomList extends Component {
         });
         console.log(items)
         runInAction("update data about Custom items from local storage.", () => {
+          console.log(JSON.stringify(this.items.slice()) !== JSON.stringify(items))
+          if(this.items !== items)
             this.items.replace(items) 
         })
       });
@@ -106,6 +116,12 @@ class CustomList extends Component {
     this.props.navigation.navigate('custom', { 
       customStore
      });
+  }
+  
+  componentWillMount() {
+    console.log('componentWillMount')
+    if (!this.props.navigation.state.params)
+      this.props.navigation.setParams({ loadLocalStorage: () => this.loadLocalStorage() })
   }
 
   render() {

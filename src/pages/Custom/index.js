@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Header, ResultList } from 'RandomGeneratorApp/src/components';
 import { InputNumberInRange, CustomListInputText } from 'RandomGeneratorApp/src/containers';
-import { Container, Content, Button, Text, ListItem, List, CheckBox, Icon, Fab, Toast } from 'native-base';
+import { Container, Content, Button, Text, ListItem, List, CheckBox, Icon, Fab, Toast, Form, Item, Label, Input } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
 
 import { RangeStore, CounterStore } from 'RandomGeneratorApp/src/stores';
 import { randomInRange } from 'RandomGeneratorApp/src/lib'
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
+
+import DialogManager, { ScaleAnimation, DialogContent } from 'react-native-dialog-component';
 
 class ItemsStore {
   @observable list
@@ -54,12 +56,69 @@ type PropsType = {
 @observer
 class Custom extends Component {
   static navigationOptions = ({ navigation }) => {
-  const { state } = navigation;
-  const { customStore } = state.params
+  const { state, setParams } = navigation;
+  let { customStore } = state.params
   return {
     title: customStore.title,
     headerRight: (
-      <Button disabled={false} onPress={() => customStore.save()} >
+      <Button disabled={false} onPress={() => {
+        const originalName = customStore.title
+        setName = (name) => {
+          let store = customStore
+          store.title = name
+          setParams({ customStore: store })
+        }
+
+        const cancel = () => {
+          setName(originalName)
+          DialogManager.dismiss()
+        }
+
+        const save = () => {
+          DialogManager.dismiss()
+          customStore.save()
+          const option = {
+            type: 'success',
+            text: 'Save is Success!',
+            position: 'bottom',
+            duration: 2000
+          }
+          Toast.show(option)
+          navigation.goBack()
+          
+        }
+
+        let dialogView = (
+          <DialogContent>
+            <Item inlineLabel>
+              <Label>Name of Item: </Label>
+              <Input 
+                defaultValue={customStore.title}
+                onChangeText={value => {
+                  setName(value)
+                }}
+              />
+            </Item>
+            <View style={{justifyContent : 'flex-end', flexDirection: 'row', margin: 10}}>
+              <Button style={{margin: 10}} rounded onPress={cancel}>
+                <Text>Cancel</Text>
+              </Button>
+              <Button style={{alignSelf : 'flex-end', margin: 10}} rounded onPress={save}>
+                <Text>Save</Text>
+              </Button>
+            </View>
+          </DialogContent>
+        )
+        DialogManager.show({
+          title: 'Comfirm',
+          titleAlign: 'center',
+          animationDuration: 200,
+          ScaleAnimation: new ScaleAnimation(),
+          children: (dialogView),
+        }, () => {
+          console.log('callback - show');
+        });
+      }} >
         <Text>Save</Text>
       </Button>
     ),
@@ -86,14 +145,14 @@ class Custom extends Component {
   handleRandomize() {
     const count = parseInt(this.counterStore.counter)
     const resultKey = this.resultKey.slice()
-    const max = this.listStore.list.length - 1
+    const max = this.itemsStore.list.length - 1
     const rand = randomInRange(0, max, count, this.isRepeat, resultKey)
 
     if (JSON.stringify(rand) != JSON.stringify(resultKey)) {
       this.count = count
       this.resultKey.replace(rand)
       this.resultKey.map((value, key) => {
-        this.result[key] = this.listStore.list[value]
+        this.result[key] = this.itemsStore.list[value]
       })
     } else {
       this.popupToast('warning', "It is exceeded the amount available.")
