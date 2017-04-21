@@ -58,57 +58,58 @@ class Custom extends Component {
   static navigationOptions = ({ navigation }) => {
   const { state, setParams } = navigation;
   let { customStore } = state.params
+  let preName = customStore.title
+  const setName = (name) => {
+    let store = customStore
+    store.title = name
+    setParams({ customStore: store })
+  }
+
+  const cancel = () => {
+    setName(preName)
+    DialogManager.dismiss()
+  }
+
+  const save = () => {
+    DialogManager.dismiss()
+    customStore.save()
+    const option = {
+      type: 'success',
+      text: 'Save is Success!',
+      position: 'bottom',
+      duration: 2000
+    }
+    Toast.show(option)
+    navigation.goBack()
+  }
+
+  let dialogView = (
+    <DialogContent>
+      <Item inlineLabel>
+        <Label>Name of Item: </Label>
+        <Input 
+          defaultValue={customStore.title}
+          onChangeText={value => {
+            setName(value)
+          }}
+        />
+      </Item>
+      <View style={{justifyContent : 'flex-end', flexDirection: 'row', margin: 10}}>
+        <Button style={{margin: 10}} rounded onPress={cancel}>
+          <Text>Cancel</Text>
+        </Button>
+        <Button style={{alignSelf : 'flex-end', margin: 10}} rounded onPress={save}>
+          <Text>Save</Text>
+        </Button>
+      </View>
+    </DialogContent>
+  )
+
   return {
     title: customStore.title,
     headerRight: (
       <Button disabled={false} onPress={() => {
-        const originalName = customStore.title
-        setName = (name) => {
-          let store = customStore
-          store.title = name
-          setParams({ customStore: store })
-        }
-
-        const cancel = () => {
-          setName(originalName)
-          DialogManager.dismiss()
-        }
-
-        const save = () => {
-          DialogManager.dismiss()
-          customStore.save()
-          const option = {
-            type: 'success',
-            text: 'Save is Success!',
-            position: 'bottom',
-            duration: 2000
-          }
-          Toast.show(option)
-          navigation.goBack()
-          
-        }
-
-        let dialogView = (
-          <DialogContent>
-            <Item inlineLabel>
-              <Label>Name of Item: </Label>
-              <Input 
-                defaultValue={customStore.title}
-                onChangeText={value => {
-                  setName(value)
-                }}
-              />
-            </Item>
-            <View style={{justifyContent : 'flex-end', flexDirection: 'row', margin: 10}}>
-              <Button style={{margin: 10}} rounded onPress={cancel}>
-                <Text>Cancel</Text>
-              </Button>
-              <Button style={{alignSelf : 'flex-end', margin: 10}} rounded onPress={save}>
-                <Text>Save</Text>
-              </Button>
-            </View>
-          </DialogContent>
-        )
+        preName = customStore.title
         DialogManager.show({
           title: 'Comfirm',
           titleAlign: 'center',
