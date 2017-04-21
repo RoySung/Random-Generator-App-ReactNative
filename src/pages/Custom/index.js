@@ -81,6 +81,7 @@ class Custom extends Component {
     this.resetResult = this.resetResult.bind(this)
     this.handleIsSetting = this.handleIsSetting.bind(this)
     this.handleSave = this.handleSave.bind(this)
+    this.handleRemove = this.handleRemove.bind(this)
   }
 
   @action
@@ -136,7 +137,7 @@ class Custom extends Component {
       this.customStore.save()
       const option = {
         type: 'success',
-        text: 'Save is Success!',
+        text: `${this.customStore.title} has been Saved.`,
         position: 'bottom',
         duration: 2000
       }
@@ -176,6 +177,18 @@ class Custom extends Component {
     }, () => {
       console.log('callback - show');
     });
+  }
+
+  handleRemove() {
+    this.customStore.remove()
+    const option = {
+      type: 'success',
+      text: `${this.customStore.title} has been Removed.`,
+      position: 'bottom',
+      duration: 2000
+    }
+    Toast.show(option)
+    this.props.navigation.goBack()
   }
   
 
@@ -232,7 +245,10 @@ class Custom extends Component {
             >
               <Icon name="md-checkmark" />
             </Button>
-            <Button style={{backgroundColor: 'red'}}>
+            <Button 
+              style={{backgroundColor: 'red'}}
+              onPress={this.handleRemove}
+            >
               <Icon name="md-trash" />
             </Button>
           </Fab>

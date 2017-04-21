@@ -14,17 +14,21 @@ class CustomStore {
     this.id = id
     this.title = title
     this.items = items
+    this.localStorage = new LocalStorge(`${this.id}`)
   }
 
   save() {
-    let localStorage = new LocalStorge(`${this.id}`)
     const { id, title, items } = this
     const value = {
       id,
       title,
       items
     }
-    return localStorage.save(value)
+    return this.localStorage.save(value)
+  }
+
+  remove() {
+    return this.localStorage.remove()
   }
 
 }
