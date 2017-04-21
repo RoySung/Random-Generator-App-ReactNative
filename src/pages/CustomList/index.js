@@ -34,20 +34,8 @@ class CustomStore {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  welcome: {
-    fontSize: appStyle.font.size.huge,
-    textAlign: 'center',
-    margin: appStyle.grid.x1,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: appStyle.colors.darkGray,
-    marginBottom: appStyle.grid.x1,
+  content: {
+    backgroundColor: 'white'
   }
 });
 
@@ -131,7 +119,7 @@ class CustomList extends Component {
   render() {
     return (
         <Container>
-          <Content>
+          <Content style={styles.content}>
             <List dataArray={this.items.slice()}
                 renderRow={item =>
                   <Button block style={{margin: 10}} onPress={() => this._goToCustom(item)}>

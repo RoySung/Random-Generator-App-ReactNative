@@ -38,6 +38,9 @@ class ItemsStore {
 }
 
 const styles = StyleSheet.flatten({
+  content: {
+    backgroundColor: 'white'
+  },
   button: {
     margin: 10
   },
@@ -205,7 +208,7 @@ class Custom extends Component {
   render() {
     return (
       <Container>
-        <Content>
+        <Content style={styles.content}>
           <CustomListInputText store={this.itemsStore} />
 
           <Button block info onPress={() => this.itemsStore.newItem()} >
