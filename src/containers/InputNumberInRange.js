@@ -14,24 +14,22 @@ class InputNumberInRange extends Component {
     return (
       
       <Item>
-        
         <InputGroup>
-        
-        <Button large rounded info onPress={() => store.decrement()}>
-          <Icon name='md-remove' />
-        </Button>
-        <Label style={{width: '15%'}}> {field} </Label>
-        <Icon name={inputIcon} style={{color:'#00C497'}}/>
-        
-        <Input 
-          keyboardType='numeric'
-          value={`${store.counter}`}
-          onChangeText={value => store.setCounter(value)}
-        />
-        <Button large rounded info onPress={() => store.increment()}>
-          <Icon name='md-add' />
-        </Button>
-      </InputGroup>
+          <Button large rounded info onPress={() => store.decrement()}>
+            <Icon name='md-remove' />
+          </Button>
+          <Label style={{width: '15%'}}> {field} </Label>
+          <Icon name={inputIcon} style={{color:'#00C497'}}/>
+          <Input 
+            keyboardType='numeric'
+            value={`${store.counter}`}
+            onChangeText={value => store.setCounter(value)}
+            style={{marginTop: 3, textAlign: 'center'}}
+          />
+          <Button large rounded info onPress={() => store.increment()}>
+            <Icon name='md-add' />
+          </Button>
+        </InputGroup>
       </Item>
     );
   }
