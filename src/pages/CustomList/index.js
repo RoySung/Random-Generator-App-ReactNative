@@ -33,7 +33,7 @@ class CustomStore {
 
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.flatten({
   content: {
     backgroundColor: 'white'
   }
