@@ -5,37 +5,12 @@ import { InputNumberInRange, CustomListInputText } from 'RandomGeneratorApp/src/
 import { Container, Content, Button, Text, ListItem, List, CheckBox, Icon, Fab, Toast, Form, Item, Label, Input } from 'native-base';
 import appStyle from 'RandomGeneratorApp/src/appStyle';
 
-import { RangeStore, CounterStore } from 'RandomGeneratorApp/src/stores';
+import { RangeStore, CounterStore, CustomItemsStore } from 'RandomGeneratorApp/src/stores';
 import { randomInRange } from 'RandomGeneratorApp/src/lib'
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 
 import DialogManager, { ScaleAnimation, DialogContent } from 'react-native-dialog-component';
-
-class ItemsStore {
-  @observable items
-  constructor(items) {
-    this.items = items
-  }
-
-  @action
-  newItem() {
-    let items = this.items.slice()
-    items.push(`default${this.items.length}`)
-    this.items.replace(items)
-  }
-
-  @action
-  setItem(index, text) {
-    this.items[index] = text
-  }
-
-  @action
-  removeItem(index) {
-    this.items.splice(index, 1)
-  }
-
-}
 
 const styles = StyleSheet.flatten({
   content: {
@@ -76,7 +51,7 @@ class Custom extends Component {
     super(props)
     // let items = ['default', 'default1']
     this.customStore = props.navigation.state.params.customStore
-    this.itemsStore = new ItemsStore(props.navigation.state.params.customStore.items.slice())
+    this.itemsStore = new CustomItemsStore(props.navigation.state.params.customStore.items.slice())
     this.counterStore = new CounterStore(2)
     this.counterStore.min = 1
     this.handleRandomize = this.handleRandomize.bind(this)
